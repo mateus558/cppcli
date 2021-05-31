@@ -175,6 +175,10 @@ namespace cppcli {
         return m_header;
     }
 
+    const std::string &CLWidget::getText() const {
+        return m_text;
+    }
+
     void CLWidget::print_log(const Log &log) {
         switch (log.type) {
             case cppcli::LogType::NORMAL:
@@ -278,5 +282,9 @@ namespace cppcli {
         }else{
             cppcli::CLWidget::m_global_exit = true;
         }
+    }
+
+    void CLWidget::setText(const std::string &text) {
+        CLWidget::m_text = text;
     }
 };

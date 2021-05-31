@@ -28,6 +28,8 @@ namespace cppcli{
 
         virtual bool show();
 
+        virtual bool operator()();
+
         virtual bool build()=0;
 
         inline void set_header(const std::string& header) { this->m_header = header; }
@@ -36,9 +38,9 @@ namespace cppcli{
 
         const std::string &get_header() const;
 
-        const std::string &get_name() const;
+        const std::string &getText() const;
 
-        bool operator()();
+        const std::string &get_name() const;
 
         bool register_group(std::string name, std::string header, const GroupType& type=GroupType::WIDGET,
                             bool hidden=false);
@@ -52,6 +54,7 @@ namespace cppcli{
         virtual ~CLWidget() = default;
 
     protected:
+
         static void clear();
 
         CLWidget* const parent() const;
@@ -89,6 +92,11 @@ namespace cppcli{
         static bool m_global_exit;
         static bool goto_main;
         bool m_local_exit = false;
+        std::string m_text;
+    public:
+        void setText(const std::string &text);
+
+    protected:
         std::string m_name{};
         CLWidget* m_parent{nullptr};
         std::map<size_t, std::string> m_groups_position;
