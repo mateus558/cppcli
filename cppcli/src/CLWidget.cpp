@@ -12,7 +12,15 @@ namespace cppcli {
 
     CLWidget::CLWidget(CLWidget* parent, std::string  name):
     m_parent(parent),
-    m_name(std::move(name)) {}
+    m_name(std::move(name)) {
+        register_group("global", "", cppcli::GroupType::ACTION, true);
+
+        register_action("global", "help", "help", [this](){
+            help();
+            wait_action();
+            return true;
+        }, true);
+    }
 
     bool CLWidget::show(){
         if(!built_ui) {
@@ -75,9 +83,9 @@ namespace cppcli {
     std::string CLWidget::option_selector() {
         std::string opt;
 
-        std::cout << " > ";
+        std::cout << ((m_cmd.empty())?" ":m_cmd) << "> ";
         std::cin >> opt;
-
+        std::cout << opt << std::endl;
         OptionGroup<CLWidget> *exec_widget = nullptr;
         OptionGroup<Action::Type> *exec_action = nullptr;
         for(auto& [key, group]: m_options){
@@ -115,17 +123,17 @@ namespace cppcli {
         return this->show();
     }
 
-    bool CLWidget::register_group(std::string name, std::string header, const GroupType& type) {
+    bool CLWidget::register_group(std::string name, std::string header, const GroupType& type, bool hidden) {
         if(group_exists(name)) return false;
 
         m_groups_position[n_options++] = name;
         switch (type) {
             case GroupType::WIDGET:
-                m_options[name] = OptionGroup<CLWidget>(name, header);
-                m_actions[name] = OptionGroup<Action::Type>(name, header);
+                m_options[name] = OptionGroup<CLWidget>(name, header, hidden);
+                m_actions[name] = OptionGroup<Action::Type>(name, header, hidden);
                 break;
             case GroupType::ACTION:
-                m_actions[name] = OptionGroup<Action::Type>(name, std::move(header));
+                m_actions[name] = OptionGroup<Action::Type>(name, std::move(header), hidden);
                 break;
             default:
                 std::clog << "Invalid group type." << std::endl;
@@ -221,5 +229,21 @@ namespace cppcli {
 
     const std::string &CLWidget::get_name() const {
         return m_name;
+    }
+
+    void CLWidget::help(const std::string &group_name) {
+        if(group_name.empty()){
+            for(const auto& [key, group]: m_groups_position){
+                m_options[group].help();
+                m_actions[group].help(false);
+            }
+        }else{
+            if(m_options.find(group_name) != m_options.end()){
+                m_options[group_name].help();
+            }
+            if(m_actions.find(group_name) != m_actions.end()){
+                m_actions[group_name].help(false);
+            }
+        }
     }
 };

@@ -63,7 +63,9 @@ namespace cppcli {
     class OptionGroup{
     public:
         OptionGroup() = default;
-        explicit OptionGroup(std::string& name, std::string header = ""): m_name(name), m_header(std::move(header)) {};
+        explicit OptionGroup(std::string& name, std::string header = "", bool hidden=false): m_name(name),
+        m_header(std::move(header)),
+        m_hidden(hidden) {};
 
         bool register_option(const std::string& text, const std::string& opt, Callable& option, bool hidden=false){
             if(exist_option(opt)) return false;
@@ -79,10 +81,18 @@ namespace cppcli {
         bool empty() const { return m_options.empty(); }
 
         void show(bool show_header=true) const {
-            if(m_options.empty()) return;
+            if(m_options.empty() || m_hidden) return;
             if(!m_header.empty() && show_header) std::cout << m_header << std::endl;
             for(const auto& [key, value]: m_options){
                 if(!value->isHidden()) std::cout << value->getOptionCode() << " - " << value->getText() << std::endl;
+            }
+        }
+
+        void help(bool show_header=true) const {
+            if(m_options.empty()) return;
+            if(!m_name.empty() && show_header) std::cout << m_name << std::endl;
+            for(const auto& [key, value]: m_options){
+                std::cout << value->getOptionCode() << " - " << value->getText() << std::endl;
             }
         }
 
@@ -124,6 +134,7 @@ namespace cppcli {
 
         using OptionPointer = std::unique_ptr<Option<Callable>>;
 
+        bool m_hidden{false};
         std::string m_name, m_header;
         std::map<std::string, OptionPointer, option_comp> m_options;
     };

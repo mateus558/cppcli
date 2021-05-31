@@ -32,13 +32,16 @@ namespace cppcli{
 
         inline void set_header(const std::string& header) { this->m_header = header; }
 
+        inline void set_cmd(const std::string& cmd) { this->m_cmd = cmd; }
+
         const std::string &get_header() const;
 
         const std::string &get_name() const;
 
         bool operator()();
 
-        bool register_group(std::string name, std::string header, const GroupType& type=GroupType::WIDGET);
+        bool register_group(std::string name, std::string header, const GroupType& type=GroupType::WIDGET,
+                            bool hidden=false);
 
         bool register_widget(const std::string& group, const std::string& text, const std::string& opt,
                              CLWidget* widget = nullptr, bool hidden = false);
@@ -68,6 +71,8 @@ namespace cppcli{
         void push_message(const std::string& msg, const cppcli::LogType& type = cppcli::LogType::LOG,
                           const std::string& custom ="");
 
+        void help(const std::string& group="");
+
     private:
         void show_options();
 
@@ -84,7 +89,7 @@ namespace cppcli{
     private:
         int n_options;
         bool built_ui = false;
-        std::string m_header;
+        std::string m_header, m_cmd;
         std::vector<cppcli::Log> messages;
     };
 };
