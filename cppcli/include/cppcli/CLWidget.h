@@ -54,7 +54,9 @@ namespace cppcli{
     protected:
         static void clear();
 
-        std::string option_selector();
+        CLWidget* const parent() const;
+
+        virtual std::string option_selector();
 
         bool group_exists(const std::string& name);
 
@@ -73,13 +75,20 @@ namespace cppcli{
 
         void help(const std::string& group="");
 
+        void exit(bool local = true);
+
     private:
+        bool control_loop_exit();
+
         void show_options();
 
         void process_messages();
 
     protected:
-        static bool m_exit;
+        static size_t m_level;
+        static bool m_global_exit;
+        static bool goto_main;
+        bool m_local_exit = false;
         std::string m_name{};
         CLWidget* m_parent{nullptr};
         std::map<size_t, std::string> m_groups_position;

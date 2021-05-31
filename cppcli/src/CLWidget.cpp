@@ -8,7 +8,9 @@
 #include <utility>
 
 namespace cppcli {
-    bool cppcli::CLWidget::m_exit = false;
+    bool cppcli::CLWidget::m_global_exit = false;
+    bool cppcli::CLWidget::goto_main = false;
+    size_t cppcli::CLWidget::m_level = 0;
 
     CLWidget::CLWidget(CLWidget* parent, std::string  name):
     m_parent(parent),
@@ -23,12 +25,15 @@ namespace cppcli {
     }
 
     bool CLWidget::show(){
+        CLWidget::m_level++;
         if(!built_ui) {
             this->build();
             built_ui = true;
         }
         clear();
         while(true){
+            if(control_loop_exit()){ return true; }
+
             if(!m_header.empty()){
                 std::cout << m_header << std::endl;
             }
@@ -37,12 +42,20 @@ namespace cppcli {
             std::cout << std::endl;
             process_messages();
             auto opt = option_selector();
-            if(cppcli::CLWidget::m_exit){
-                break;
-            }
             clear();
         }
-        return true;
+    }
+
+    bool CLWidget::control_loop_exit() {
+        if(CLWidget::goto_main && CLWidget::m_level == 1){
+            CLWidget::goto_main = false;
+        }
+        if(cppcli::CLWidget::m_global_exit || m_local_exit || (CLWidget::goto_main && CLWidget::m_level > 1)){
+            CLWidget::m_level--;
+            m_local_exit = false;
+            return true;
+        }
+        return false;
     }
 
     void CLWidget::show_options() {
@@ -191,12 +204,20 @@ namespace cppcli {
     void CLWidget::add_exit_group() {
         register_group("exit", "\n--------------------------\n", cppcli::GroupType::ACTION);
 
-        register_action("exit", "Back to the main menu", "m", [this](){
-            return this->m_parent->show();
-        });
-
-        register_action("exit", "Exit", "e", [](){
-            CLWidget::m_exit = true;
+        if(CLWidget::m_level > 1) {
+            register_action("exit", "Back to the main menu", "m", [this]() {
+                CLWidget::goto_main = true;
+                return true;
+            });
+        }
+        if(CLWidget::m_level > 2){
+            register_action("exit", "Back to the previous menu", "b", [this]() {
+                exit();
+                return true;
+            });
+        }
+        register_action("exit", "Exit", "e", [this](){
+            exit(false);
             return true;
         });
     }
@@ -244,6 +265,18 @@ namespace cppcli {
             if(m_actions.find(group_name) != m_actions.end()){
                 m_actions[group_name].help(false);
             }
+        }
+    }
+
+    CLWidget *const CLWidget::parent() const {
+        return this->m_parent;
+    }
+
+    void CLWidget::exit(bool local) {
+        if(local){
+            this->m_local_exit = true;
+        }else{
+            cppcli::CLWidget::m_global_exit = true;
         }
     }
 };
