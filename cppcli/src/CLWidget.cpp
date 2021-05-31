@@ -175,7 +175,7 @@ namespace cppcli {
         return m_header;
     }
 
-    const std::string &CLWidget::getText() const {
+    const std::string &CLWidget::get_text() const {
         return m_text;
     }
 
@@ -284,7 +284,7 @@ namespace cppcli {
         }
     }
 
-    void CLWidget::setText(const std::string &text) {
+    void CLWidget::set_text(const std::string &text) {
         CLWidget::m_text = text;
     }
 };

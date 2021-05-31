@@ -36,9 +36,11 @@ namespace cppcli{
 
         inline void set_cmd(const std::string& cmd) { this->m_cmd = cmd; }
 
+        void set_text(const std::string &text);
+
         const std::string &get_header() const;
 
-        const std::string &getText() const;
+        const std::string &get_text() const;
 
         const std::string &get_name() const;
 
@@ -93,8 +95,6 @@ namespace cppcli{
         static bool goto_main;
         bool m_local_exit = false;
         std::string m_text;
-    public:
-        void setText(const std::string &text);
 
     protected:
         std::string m_name{};
