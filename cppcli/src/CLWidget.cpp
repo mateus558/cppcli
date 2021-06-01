@@ -6,7 +6,9 @@
 #include <iostream>
 #include <algorithm>
 #include <utility>
-
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#include "windows.h"
+#endif
 namespace cppcli {
     bool cppcli::CLWidget::m_global_exit = false;
     bool cppcli::CLWidget::goto_main = false;
