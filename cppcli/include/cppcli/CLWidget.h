@@ -59,7 +59,7 @@ namespace cppcli{
 
         static void clear();
 
-        CLWidget* const parent() const;
+        CLWidget* parent() const;
 
         virtual std::string option_selector();
 
@@ -83,6 +83,7 @@ namespace cppcli{
         void exit(bool local = true);
 
     private:
+        void show_console_title();
         bool control_loop_exit();
 
         void show_options();

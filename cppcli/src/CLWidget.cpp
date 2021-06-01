@@ -34,6 +34,7 @@ namespace cppcli {
         while(true){
             if(control_loop_exit()){ return true; }
 
+            show_console_title();
             if(!m_header.empty()){
                 std::cout << m_header << std::endl;
             }
@@ -272,7 +273,7 @@ namespace cppcli {
         }
     }
 
-    CLWidget *const CLWidget::parent() const {
+    CLWidget *CLWidget::parent() const {
         return this->m_parent;
     }
 
@@ -286,5 +287,13 @@ namespace cppcli {
 
     void CLWidget::set_text(const std::string &text) {
         CLWidget::m_text = text;
+    }
+
+    void CLWidget::show_console_title() {
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+        SetConsoleTitle(get_name().c_str());
+#else
+        std::cout << "\033]0;" << get_name() << "\007";
+#endif
     }
 };
