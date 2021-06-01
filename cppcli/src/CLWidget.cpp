@@ -61,7 +61,8 @@ namespace cppcli {
 
     void CLWidget::show_options() {
         for(const auto& [key, group]: m_groups_position){
-            if((m_options.find(group) != m_options.end()) && !m_options[group].empty()){
+            if((m_options.find(group) != m_options.end()) && !m_options[group].empty() &&
+            m_groups_types[group] == cppcli::WIDGET){
                 m_options[group].show();
                 if(m_actions.find(group) != m_actions.end()){
                     m_actions[group].show(false);
@@ -153,6 +154,7 @@ namespace cppcli {
                 std::clog << "Invalid group type." << std::endl;
                 return false;
         }
+        this->m_groups_types[name] = type;
         return true;
     }
 

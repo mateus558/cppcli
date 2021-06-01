@@ -53,6 +53,9 @@ namespace cppcli{
         bool register_action(const std::string& group, const std::string& text, const std::string& opt,
                              Action::Type action = nullptr, bool hidden = false);
 
+        void push_message(const std::string& msg, const cppcli::LogType& type = cppcli::LogType::LOG,
+                          const std::string& custom ="");
+
         virtual ~CLWidget() = default;
 
     protected:
@@ -74,9 +77,6 @@ namespace cppcli{
         bool ask_run_action(const std::string& text, const Action::Type& action, const std::string& action_name="", bool verbose=true);
 
         void use_parent_header();
-
-        void push_message(const std::string& msg, const cppcli::LogType& type = cppcli::LogType::LOG,
-                          const std::string& custom ="");
 
         void help(const std::string& group="");
 
@@ -102,6 +102,7 @@ namespace cppcli{
         CLWidget* m_parent{nullptr};
         std::map<size_t, std::string> m_groups_position;
         std::unordered_map<std::string, OptionGroup<CLWidget>> m_options;
+        std::unordered_map<std::string, cppcli::GroupType> m_groups_types;
         std::unordered_map<std::string, OptionGroup<Action::Type>> m_actions;
 
     private:
