@@ -10,7 +10,7 @@
 
 namespace cppcli{
     enum GroupType {WIDGET, ACTION};
-    enum LogType {NORMAL, LOG, ERROR, CUSTOM};
+    enum LogType {NORMAL, LOG, LOGERROR, CUSTOM};
 
     struct Log{
         Log(std::string _text, const LogType& _type, std::string _custom = ""):

@@ -125,14 +125,14 @@ namespace cppcli {
 
         if(exec_widget) {
             if(!(*exec_widget)(opt)){
-                push_message("there were errors executing this option.", cppcli::LogType::ERROR);
+                push_message("there were errors executing this option.", cppcli::LogType::LOGERROR);
             }
         }else if(exec_action){
             if(!(*exec_action)(opt)){
-                push_message("there were errors executing this option.", cppcli::LogType::ERROR);
+                push_message("there were errors executing this option.", cppcli::LogType::LOGERROR);
             }
         }else{
-            messages.emplace_back("Invalid option!", cppcli::LogType::ERROR);
+            messages.emplace_back("Invalid option!", cppcli::LogType::LOGERROR);
         }
 
         return opt;
@@ -194,7 +194,7 @@ namespace cppcli {
             case cppcli::LogType::LOG:
                 std::clog << "[LOG]: " << log.text << std::endl;
                 break;
-            case cppcli::LogType::ERROR:
+            case cppcli::LogType::LOGERROR:
                 std::cerr << "[ERROR]: " << log.text << std::endl;
                 break;
             case cppcli::LogType::CUSTOM:
