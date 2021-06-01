@@ -8,6 +8,8 @@
 #include <utility>
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 #include "windows.h"
+#undef max
+#undef min
 #endif
 namespace cppcli {
     bool cppcli::CLWidget::m_global_exit = false;
