@@ -125,11 +125,9 @@ namespace cppcli {
 
         if(exec_widget && !(*exec_widget)(opt)) {
             push_message("there were errors executing this option.", cppcli::LogType::LOGERROR);
-        }else if(exec_action){
-            if(!(*exec_action)(opt)){
-                push_message("there were errors executing this option.", cppcli::LogType::LOGERROR);
-            }
-        }else{
+        }else if(exec_action && !(*exec_action)(opt)){
+            push_message("there were errors executing this option.", cppcli::LogType::LOGERROR);
+        }else if(!exec_widget && !exec_action){
             messages.emplace_back("Invalid option!", cppcli::LogType::LOGERROR);
         }
 
