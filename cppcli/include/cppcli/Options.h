@@ -35,6 +35,7 @@ namespace cppcli {
         }
 
         bool operator()(){
+            if(m_update) m_update();
             if constexpr (std::is_same<Callable, Action::Type>::value){
                 return (m_action) && m_action();
             }
@@ -50,14 +51,18 @@ namespace cppcli {
         }
 
         inline const std::string& getOptionCode() { return this->m_opt; }
+
+        void setUpdate(const Action::Type &mUpdate) {
+            m_update = mUpdate;
+        }
+
     private:
         std::string m_opt{};
         std::string m_text{};
         bool m_hidden{false};
-
-    private:
         Callable* m_option{nullptr};
         Action::Type m_action;
+        Action::Type m_update{nullptr};
     };
 
     template< class Callable >
@@ -68,9 +73,11 @@ namespace cppcli {
         m_header(std::move(header)),
         m_hidden(hidden) {};
 
-        bool register_option(const std::string& text, const std::string& opt, Callable& option, bool hidden=false){
+        bool register_option(const std::string& text, const std::string& opt, Callable& option,
+                             Action::Type update_func = nullptr, bool hidden=false){
             if(exist_option(opt)) return false;
             m_options[opt] = std::make_unique<Option<Callable>>(text, opt, option, hidden);
+            m_options[opt]->setUpdate(update_func);
             return true;
         }
 
@@ -79,7 +86,7 @@ namespace cppcli {
             return (*m_options[opt])();
         }
 
-        bool empty() const { return m_options.empty(); }
+        [[nodiscard]] bool empty() const { return m_options.empty(); }
 
         void show(bool show_header=true) const {
             if(m_options.empty() || m_hidden) return;

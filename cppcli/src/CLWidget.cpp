@@ -17,15 +17,15 @@ namespace cppcli {
     size_t cppcli::CLWidget::m_level = 0;
 
     CLWidget::CLWidget(CLWidget* parent, std::string  name):
-    m_parent(parent),
-    m_name(std::move(name)) {
+            m_parent(parent),
+            m_name(std::move(name)) {
         register_group("global", "", cppcli::GroupType::ACTION, true);
 
         register_action("global", "help", "help", [this](){
             help();
             wait_action();
             return true;
-        }, true);
+        }, nullptr, true);
     }
 
     bool CLWidget::show(){
@@ -66,7 +66,7 @@ namespace cppcli {
     void CLWidget::show_options() {
         for(const auto& [key, group]: m_groups_position){
             if((m_options.find(group) != m_options.end()) && !m_options[group].empty() &&
-            m_groups_types[group] == cppcli::WIDGET){
+               m_groups_types[group] == cppcli::WIDGET){
                 m_options[group].show();
                 if(m_actions.find(group) != m_actions.end()){
                     m_actions[group].show(false);
@@ -123,10 +123,8 @@ namespace cppcli {
             }
         }
 
-        if(exec_widget) {
-            if(!(*exec_widget)(opt)){
-                push_message("there were errors executing this option.", cppcli::LogType::LOGERROR);
-            }
+        if(exec_widget && !(*exec_widget)(opt)) {
+            push_message("there were errors executing this option.", cppcli::LogType::LOGERROR);
         }else if(exec_action){
             if(!(*exec_action)(opt)){
                 push_message("there were errors executing this option.", cppcli::LogType::LOGERROR);
@@ -163,15 +161,15 @@ namespace cppcli {
     }
 
     bool CLWidget::register_widget(const std::string& group, const std::string& text, const std::string& opt,
-                                   CLWidget *widget, bool hidden) {
+                                   CLWidget *widget, Action::Type update_func, bool hidden) {
         if(!group_exists(group)) return false;
-        return m_options[group].register_option(text, opt, *widget, hidden);
+        return m_options[group].register_option(text, opt, *widget, std::move(update_func), hidden);
     }
 
     bool CLWidget::register_action(const std::string &group, const std::string &text, const std::string &opt,
-                                   Action::Type action, bool hidden) {
+                                   Action::Type action, Action::Type update_func, bool hidden) {
         if(!group_exists(group)) return false;
-        return m_actions[group].register_option(text, opt, action, hidden);
+        return m_actions[group].register_option(text, opt, action, std::move(update_func), hidden);
     }
 
     bool CLWidget::group_exists(const std::string& name) {
@@ -256,7 +254,7 @@ namespace cppcli {
             if(verbose) push_message(action_name + " action not executed.", cppcli::LogType::CUSTOM, "SYSTEM");
         }
         clear();
-        return (y == 'y');
+        return true;
     }
 
     const std::string &CLWidget::get_name() const {
@@ -295,7 +293,7 @@ namespace cppcli {
         CLWidget::m_text = text;
     }
 
-    void CLWidget::show_console_title() {
+    void CLWidget::show_console_title() const {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
         SetConsoleTitle(get_name().c_str());
 #else

@@ -14,9 +14,9 @@ namespace cppcli{
 
     struct Log{
         Log(std::string _text, const LogType& _type, std::string _custom = ""):
-        text(std::move(_text)),
-        type(_type),
-        custom(std::move(_custom)){};
+                text(std::move(_text)),
+                type(_type),
+                custom(std::move(_custom)){};
 
         std::string text, custom;
         LogType type = LogType::NORMAL;
@@ -48,10 +48,10 @@ namespace cppcli{
                             bool hidden=false);
 
         bool register_widget(const std::string& group, const std::string& text, const std::string& opt,
-                             CLWidget* widget = nullptr, bool hidden = false);
+                             CLWidget* widget = nullptr, Action::Type update_func = nullptr, bool hidden = false);
 
         bool register_action(const std::string& group, const std::string& text, const std::string& opt,
-                             Action::Type action = nullptr, bool hidden = false);
+                             Action::Type action = nullptr, Action::Type update_func = nullptr, bool hidden = false);
 
         void push_message(const std::string& msg, const cppcli::LogType& type = cppcli::LogType::LOG,
                           const std::string& custom ="");
@@ -83,7 +83,7 @@ namespace cppcli{
         void exit(bool local = true);
 
     private:
-        void show_console_title();
+        void show_console_title() const;
         bool control_loop_exit();
 
         void show_options();
